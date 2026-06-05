@@ -904,6 +904,27 @@ body {
         right: 10px;
     }
 
+    .filters-group {
+        display: flex;
+        gap: 8px;
+        width: 100%;
+    }
+
+    .form-select {
+        flex: 1;
+        min-width: 0;
+        padding: 8px 10px;
+        font-size: 0.8rem;
+    }
+
+    .btn-toggle-bookmark {
+        flex: 1;
+        padding: 8px 10px;
+        font-size: 0.8rem;
+        justify-content: center;
+    }
+
+
     .quiz-card {
         padding: 16px 14px;
         gap: 16px;
