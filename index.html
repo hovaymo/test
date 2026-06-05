@@ -32,7 +32,13 @@
                 </div>
             </div>
 
-            <div class="header-actions">
+            <div class="header-actions" style="display: flex; gap: 8px;">
+                <!-- Stats Button -->
+                <button id="show-stats-btn" class="btn-icon" title="Показати результати" aria-label="Show Stats">
+                    <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 20v-6M18 20V10M6 20v-4M12 20V4"></path>
+                    </svg>
+                </button>
                 <!-- Theme Toggle -->
                 <button id="theme-toggle" class="btn-icon" title="Змінити тему" aria-label="Toggle Theme">
                     <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="icon-sun">
@@ -108,22 +114,15 @@
                 </div>
 
                 <!-- Navigation Controls -->
-                <div class="quiz-controls">
-                    <button id="prev-btn" class="btn btn-secondary" disabled>
+                <div class="quiz-controls" style="display: flex; gap: 12px; width: 100%;">
+                    <button id="prev-btn" class="btn btn-secondary" style="flex: 1;" disabled>
                         <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
                             <polyline points="15 18 9 12 15 6"></polyline>
                         </svg>
                         <span>Назад</span>
                     </button>
-                    
-                    <button id="show-stats-btn" class="btn btn-secondary" title="Показати статистику">
-                        <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M12 20v-6M18 20V10M6 20v-4M12 20V4"></path>
-                        </svg>
-                        <span>Результати</span>
-                    </button>
 
-                    <button id="next-btn" class="btn btn-primary">
+                    <button id="next-btn" class="btn btn-primary" style="flex: 1;">
                         <span>Пропустити</span>
                         <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
                             <polyline points="9 18 15 12 9 6"></polyline>

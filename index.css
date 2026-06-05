@@ -839,3 +839,202 @@ body {
 .shake {
     animation: shake 0.3s ease-in-out;
 }
+
+/* ==========================================
+   Mobile Responsiveness & Safe Areas
+   ========================================== */
+
+/* Safe area support for desktop/large screens default */
+.app-container {
+    padding-top: calc(24px + env(safe-area-inset-top, 0px));
+    padding-bottom: calc(120px + env(safe-area-inset-bottom, 0px));
+}
+
+.app-footer {
+    padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+}
+
+/* Mobile Devices (max-width: 480px) */
+@media (max-width: 480px) {
+    .app-container {
+        padding: calc(44px + env(safe-area-inset-top, 0px)) 10px calc(90px + env(safe-area-inset-bottom, 0px)) 10px;
+        gap: 12px;
+    }
+
+    .app-header {
+        padding: 10px 12px;
+    }
+
+    .header-logo {
+        gap: 8px;
+    }
+
+    .logo-icon {
+        width: 26px;
+        height: 26px;
+    }
+
+    .header-title-group h1 {
+        font-size: 1.1rem;
+    }
+
+    .header-title-group .subtitle {
+        font-size: 0.72rem;
+    }
+
+    .btn-icon {
+        width: 38px;
+        height: 38px;
+    }
+
+    .filters-panel {
+        padding: 10px 12px;
+    }
+
+    .search-box input {
+        padding: 10px 36px 10px 36px;
+        font-size: 0.85rem;
+    }
+
+    .search-icon {
+        left: 10px;
+    }
+
+    .clear-btn {
+        right: 10px;
+    }
+
+    .quiz-card {
+        padding: 16px 14px;
+        gap: 16px;
+        border-radius: var(--border-radius-md);
+    }
+
+    .card-header {
+        padding-bottom: 10px;
+    }
+
+    #question-index-badge {
+        font-size: 0.95rem !important;
+    }
+
+    .question-container h2 {
+        font-size: 1.05rem;
+        line-height: 1.4;
+    }
+
+    .options-list {
+        gap: 8px;
+    }
+
+    .option-btn {
+        padding: 12px 14px;
+        gap: 10px;
+        font-size: 0.85rem;
+        border-radius: var(--border-radius-sm);
+    }
+
+    .option-num {
+        min-width: 22px;
+        height: 22px;
+        font-size: 0.75rem;
+    }
+
+    .quiz-controls {
+        gap: 10px !important;
+    }
+
+    .btn {
+        padding: 10px 14px;
+        font-size: 0.85rem;
+        border-radius: var(--border-radius-sm);
+    }
+
+    .btn svg {
+        width: 14px;
+        height: 14px;
+    }
+
+    /* Footer scoreboard */
+    .app-footer {
+        padding: 12px 16px calc(12px + env(safe-area-inset-bottom, 0px)) 16px;
+    }
+
+    .progress-text {
+        font-size: 0.75rem;
+    }
+
+    /* Stats Screen */
+    .stats-card {
+        padding: 20px 16px;
+        gap: 20px;
+    }
+
+    .stats-card h2 {
+        font-size: 1.3rem;
+    }
+
+    .stats-grid {
+        gap: 10px;
+    }
+
+    .stat-box {
+        padding: 14px 10px;
+    }
+
+    .stat-val {
+        font-size: 1.25rem;
+    }
+
+    .stat-label {
+        font-size: 0.7rem;
+    }
+
+    .stats-actions {
+        gap: 10px;
+    }
+}
+
+/* Extra small devices (max-width: 360px) */
+@media (max-width: 360px) {
+    .app-container {
+        padding: calc(36px + env(safe-area-inset-top, 0px)) 6px calc(80px + env(safe-area-inset-bottom, 0px)) 6px;
+        gap: 8px;
+    }
+
+    .app-header {
+        padding: 8px 10px;
+    }
+
+    .header-title-group h1 {
+        font-size: 1rem;
+    }
+
+    .header-title-group .subtitle {
+        display: none; /* Hide subtitle to save screen real estate */
+    }
+
+    .quiz-card {
+        padding: 12px 10px;
+        gap: 12px;
+    }
+
+    .question-container h2 {
+        font-size: 0.95rem;
+    }
+
+    .option-btn {
+        padding: 10px 10px;
+        font-size: 0.8rem;
+    }
+
+    .btn {
+        padding: 8px 10px;
+        font-size: 0.8rem;
+    }
+    
+    .progress-text {
+        font-size: 0.7rem;
+    }
+}
+
