@@ -1,0 +1,7 @@
+# Ignore temporary parse scripts and documents
+*.docx
+*.json
+*.txt
+*.py
+.gemini/
+.git/

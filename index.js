@@ -2,7 +2,6 @@
 document.addEventListener("DOMContentLoaded", () => {
     // 1. Initial State
     const allQuestions = window.QUIZ_QUESTIONS || [];
-    let bookmarks = new Set(JSON.parse(localStorage.getItem("quiz_bookmarks") || "[]"));
     let userAnswers = JSON.parse(localStorage.getItem("quiz_answers") || "{}"); // Format: { questionNum: { selectedIndex, isCorrect } }
     
     // Filters and Navigation State
@@ -13,11 +12,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const quizScreen = document.getElementById("quiz-screen");
     const statsScreen = document.getElementById("stats-screen");
     
-    const questionLevel = document.getElementById("question-level");
     const questionIndexBadge = document.getElementById("question-index-badge");
     const questionText = document.getElementById("question-text");
     const optionsContainer = document.getElementById("options-container");
-    const bookmarkBtn = document.getElementById("bookmark-btn");
     
     const prevBtn = document.getElementById("prev-btn");
     const nextBtn = document.getElementById("next-btn");
@@ -29,9 +26,6 @@ document.addEventListener("DOMContentLoaded", () => {
     
     const searchInput = document.getElementById("search-input");
     const clearSearchBtn = document.getElementById("clear-search");
-    const levelFilter = document.getElementById("level-filter");
-    const bookmarkFilterBtn = document.getElementById("bookmark-filter-btn");
-    const bookmarkCountBadge = document.getElementById("bookmark-count");
     
     // Stats elements
     const statsTotalAnswered = document.getElementById("stats-total-answered");
@@ -39,22 +33,13 @@ document.addEventListener("DOMContentLoaded", () => {
     const statsIncorrectCount = document.getElementById("stats-incorrect-count");
     const statsAccuracy = document.getElementById("stats-accuracy");
     
-    const barLvl1 = document.getElementById("bar-lvl1");
-    const txtLvl1 = document.getElementById("txt-lvl1");
-    const barLvl2 = document.getElementById("bar-lvl2");
-    const txtLvl2 = document.getElementById("txt-lvl2");
-    const barLvl3 = document.getElementById("bar-lvl3");
-    const txtLvl3 = document.getElementById("txt-lvl3");
-    
     const resumeQuizBtn = document.getElementById("resume-quiz-btn");
     const resetQuizBtn = document.getElementById("reset-quiz-btn");
     
     // Footer progress
     const footerScoreText = document.getElementById("footer-score-text");
-    const footerPercentText = document.getElementById("footer-percent-text");
+    const footerIndexText = document.getElementById("footer-index-text");
     const globalProgressBar = document.getElementById("global-progress-bar");
-    
-    let isOnlyBookmarksFiltered = false;
     
     // Theme Toggle State
     const themeToggleBtn = document.getElementById("theme-toggle");
@@ -63,16 +48,12 @@ document.addEventListener("DOMContentLoaded", () => {
     
     // 2. Initialize App
     function init() {
-        updateBookmarkCount();
         applyFilters();
         updateScoreboard();
         
         // Event Listeners
         themeToggleBtn.addEventListener("click", toggleTheme);
-        bookmarkBtn.addEventListener("click", toggleCurrentBookmark);
-        bookmarkFilterBtn.addEventListener("click", toggleBookmarkFilter);
         
-        levelFilter.addEventListener("change", applyFilters);
         searchInput.addEventListener("input", () => {
             clearSearchBtn.style.display = searchInput.value ? "block" : "none";
             applyFilters();
@@ -101,18 +82,8 @@ document.addEventListener("DOMContentLoaded", () => {
     // 4. Filtering Logic
     function applyFilters() {
         const searchText = searchInput.value.toLowerCase().trim();
-        const selectedLevel = levelFilter.value; // "all", "1", "2", "3"
         
         filteredQuestions = allQuestions.filter(q => {
-            // Level match
-            if (selectedLevel !== "all") {
-                const lvlNum = q.level.match(/\d+/);
-                if (!lvlNum || lvlNum[0] !== selectedLevel) return false;
-            }
-            
-            // Bookmark match
-            if (isOnlyBookmarksFiltered && !bookmarks.has(q.num)) return false;
-            
             // Search query match (search by question text or question number)
             if (searchText) {
                 const numStr = q.num.toString();
@@ -120,18 +91,11 @@ document.addEventListener("DOMContentLoaded", () => {
                 const numMatch = numStr === searchText || numStr.startsWith(searchText + ".") || q.question.startsWith(searchText);
                 if (!textMatch && !numMatch) return false;
             }
-            
             return true;
         });
         
         currentIndex = 0;
         showQuestion();
-    }
-    
-    function toggleBookmarkFilter() {
-        isOnlyBookmarksFiltered = !isOnlyBookmarksFiltered;
-        bookmarkFilterBtn.classList.toggle("active", isOnlyBookmarksFiltered);
-        applyFilters();
     }
     
     // 5. Render Question
@@ -142,29 +106,24 @@ document.addEventListener("DOMContentLoaded", () => {
         
         if (filteredQuestions.length === 0) {
             // Render Empty State
-            questionLevel.textContent = "ПОРОЖНЬО";
-            questionIndexBadge.textContent = "0 з 0";
-            questionText.textContent = "Не знайдено запитань за вказаними фільтрами.";
+            questionIndexBadge.textContent = "0/0";
+            questionText.textContent = "Не знайдено запитань за вашим пошуком.";
             optionsContainer.innerHTML = "";
-            bookmarkBtn.classList.remove("active");
-            bookmarkBtn.disabled = true;
             prevBtn.disabled = true;
             nextBtn.disabled = true;
             nextBtn.querySelector("span").textContent = "Пропустити";
+            footerIndexText.textContent = "Питання: 0/0";
             return;
         }
         
-        bookmarkBtn.disabled = false;
-        
         const q = filteredQuestions[currentIndex];
         
-        // Update header info
-        questionLevel.textContent = q.level;
-        questionIndexBadge.textContent = `Запитання ${q.num} з ${allQuestions.length} (${currentIndex + 1} з ${filteredQuestions.length} відфільтрованих)`;
-        questionText.textContent = q.question;
+        // Update header info (Format: "34/600")
+        const indexTextStr = `${q.num}/${allQuestions.length}`;
+        questionIndexBadge.textContent = indexTextStr;
+        footerIndexText.textContent = `Питання: ${indexTextStr}`;
         
-        // Bookmark active state
-        bookmarkBtn.classList.toggle("active", bookmarks.has(q.num));
+        questionText.textContent = q.question;
         
         // Render Options
         optionsContainer.innerHTML = "";
@@ -213,6 +172,10 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         
         nextBtn.disabled = currentIndex === filteredQuestions.length - 1 && isAnswered;
+        
+        // Update progress bar to show navigation position
+        const navigationPercent = filteredQuestions.length > 0 ? Math.round(((currentIndex + 1) / filteredQuestions.length) * 100) : 0;
+        globalProgressBar.style.width = `${navigationPercent}%`;
     }
     
     // 6. Option Selection Logic
@@ -280,28 +243,9 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
     
-    // 9. Bookmarks toggle
-    function toggleCurrentBookmark() {
-        if (filteredQuestions.length === 0) return;
-        const q = filteredQuestions[currentIndex];
-        if (bookmarks.has(q.num)) {
-            bookmarks.delete(q.num);
-        } else {
-            bookmarks.add(q.num);
-        }
-        localStorage.setItem("quiz_bookmarks", JSON.stringify(Array.from(bookmarks)));
-        updateBookmarkCount();
-        showQuestion();
-    }
-    
-    function updateBookmarkCount() {
-        bookmarkCountBadge.textContent = bookmarks.size;
-    }
-    
-    // 10. Stats calculation
+    // 9. Scoreboard calculation
     function updateScoreboard() {
         const answeredKeys = Object.keys(userAnswers);
-        const totalAnswered = answeredKeys.length;
         
         let correctCount = 0;
         answeredKeys.forEach(k => {
@@ -309,11 +253,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
         
         // Footer updates
-        footerScoreText.textContent = `Рахунок: ${correctCount} правильних відповідей`;
-        
-        const completionPercent = allQuestions.length > 0 ? Math.round((totalAnswered / allQuestions.length) * 100) : 0;
-        footerPercentText.textContent = `Пройдено: ${completionPercent}%`;
-        globalProgressBar.style.width = `${completionPercent}%`;
+        footerScoreText.textContent = `Правильних відповідей: ${correctCount}`;
     }
     
     function showStats() {
@@ -325,32 +265,10 @@ document.addEventListener("DOMContentLoaded", () => {
         const totalAnswered = answeredKeys.length;
         
         let correctCount = 0;
-        let lvl1Correct = 0, lvl1Total = 0, lvl1Answered = 0;
-        let lvl2Correct = 0, lvl2Total = 0, lvl2Answered = 0;
-        let lvl3Correct = 0, lvl3Total = 0, lvl3Answered = 0;
-        
         allQuestions.forEach(q => {
-            const lvlNum = q.level.match(/\d+/);
-            const levelVal = lvlNum ? parseInt(lvlNum[0]) : 1;
-            
-            if (levelVal === 1) lvl1Total++;
-            else if (levelVal === 2) lvl2Total++;
-            else if (levelVal === 3) lvl3Total++;
-            
             const ans = userAnswers[q.num];
-            if (ans) {
-                if (levelVal === 1) {
-                    lvl1Answered++;
-                    if (ans.isCorrect) lvl1Correct++;
-                } else if (levelVal === 2) {
-                    lvl2Answered++;
-                    if (ans.isCorrect) lvl2Correct++;
-                } else if (levelVal === 3) {
-                    lvl3Answered++;
-                    if (ans.isCorrect) lvl3Correct++;
-                }
-                
-                if (ans.isCorrect) correctCount++;
+            if (ans && ans.isCorrect) {
+                correctCount++;
             }
         });
         
@@ -361,19 +279,6 @@ document.addEventListener("DOMContentLoaded", () => {
         statsCorrectCount.textContent = correctCount;
         statsIncorrectCount.textContent = incorrectCount;
         statsAccuracy.textContent = `${accuracy}%`;
-        
-        // Levels Progress bars
-        const pct1 = lvl1Total > 0 ? Math.round((lvl1Answered / lvl1Total) * 100) : 0;
-        barLvl1.style.width = `${pct1}%`;
-        txtLvl1.textContent = `${lvl1Answered}/${lvl1Total} (${pct1}%) - Точність: ${lvl1Answered > 0 ? Math.round((lvl1Correct/lvl1Answered)*100) : 0}%`;
-        
-        const pct2 = lvl2Total > 0 ? Math.round((lvl2Answered / lvl2Total) * 100) : 0;
-        barLvl2.style.width = `${pct2}%`;
-        txtLvl2.textContent = `${lvl2Answered}/${lvl2Total} (${pct2}%) - Точність: ${lvl2Answered > 0 ? Math.round((lvl2Correct/lvl2Answered)*100) : 0}%`;
-        
-        const pct3 = lvl3Total > 0 ? Math.round((lvl3Answered / lvl3Total) * 100) : 0;
-        barLvl3.style.width = `${pct3}%`;
-        txtLvl3.textContent = `${lvl3Answered}/${lvl3Total} (${pct3}%) - Точність: ${lvl3Answered > 0 ? Math.round((lvl3Correct/lvl3Answered)*100) : 0}%`;
     }
     
     function showQuiz() {
@@ -383,7 +288,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     
     function resetProgress() {
-        if (confirm("Ви дійсно хочете скинути весь прогрес відповідей? Це не видалить збережені запитання.")) {
+        if (confirm("Ви дійсно хочете скинути весь прогрес відповідей?")) {
             userAnswers = {};
             localStorage.removeItem("quiz_answers");
             updateScoreboard();
